@@ -1,30 +1,40 @@
 # Agent Development Guide - kiogreo-digimon
 
 > **Purpose**: AI orchestration framework for Digimon-like virtual pet simulation within the Kiogreo Ecosystem  
-> **Stack**: TypeScript, Bun/Node.js, OpenCode AI Framework  
-> **Last Updated**: 2026-01-06
+> **Stack**: TypeScript, Bun runtime, OpenCode AI Framework  
+> **Last Updated**: 2026-01-14
 
 ---
 
 ## Build, Lint & Test Commands
 
 ```bash
-# Testing (not yet configured - add Vitest/Jest)
-bun test                    # Run all tests
-bun test <file>             # Run single test file
-bun test --watch            # Watch mode
+# Development
+bun run <file>.ts           # Run TypeScript directly (no build step needed)
+bun --watch <file>.ts       # Run with auto-reload
 
-# Type Checking & Build
-tsc --noEmit                # Type check only
-bun run <file>.ts           # Run TypeScript directly
+# Type Checking
+tsc --noEmit                # Type check without emitting files
+tsc --noEmit --watch        # Watch mode for type checking
 
-# Linting (not yet configured - add ESLint)
-eslint .                    # Lint all files
-eslint --fix .              # Auto-fix issues
+# Testing (Framework not yet configured)
+# TODO: Add Vitest or Bun's built-in test runner
+# bun test                  # Run all tests (when configured)
+# bun test <file>           # Run single test file
+# bun test --watch          # Watch mode
+
+# Linting (Not yet configured)
+# TODO: Add ESLint with TypeScript support
+# eslint .                  # Lint all files
+# eslint --fix .            # Auto-fix issues
 
 # Plugin/Tool Development
 cd .opencode/plugin && bun install && bun run telegram-notify.ts
-cd .opencode/tool && bun install
+cd .opencode/tool && bun install && bun run gemini/index.ts
+
+# OpenCode Agent Usage
+opencode --agent openagent  # Start universal agent
+opencode --agent opencoder  # Start development specialist
 ```
 
 ---
