@@ -8,7 +8,11 @@
   "model": "ollama/gpt-oss:120b-cloud",
   "small_model": "ollama/gpt-oss:120b-cloud",
   "plugin": [
-
+    // "@mohak34/opencode-notifier@latest",
+    // "@tarquinen/opencode-dcp@latest",
+    // "@zenobius/opencode-skillful",
+    "@openspoon/subtask2@latest",
+    "opencode-websearch-cited@1.2.0", // IMPORTANT: Put opencode-websearch-cited LAST in the plugin list to avoid impacting other plugins' auth process.
   ],
   "compaction": {
     "prune": true,
@@ -24,5 +28,25 @@
       ".opencode/skill",
       ".opencode/skills"
     ]
+  },
+  "mcp": {
+    "context7": {
+      "enabled": true,
+      "type": "local",
+      "command": ["npx", "-y", "@upstash/context7-mcp"],
+      "environment": {
+        "CONTEXT7_API_KEY": "${env:CONTEXT7_API_KEY}"
+      }
+    },
+    "markitdown": {
+      "enabled": true,
+      "type": "local",
+      "command": ["uvx", "--python", "3.10", "markitdown-mcp"]
+    },
+    "markdown_rag": {
+      "enabled": true,
+      "type": "local",
+      "command": ["uv", "--directory", "/home/kiogreo/Desktop/note/journal/.opencode/mcp/MCP-Markdown-RAG", "run", "server.py"]
+    }
   }
 }

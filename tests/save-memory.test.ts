@@ -9,7 +9,7 @@ describe("saveMemorySkill", () => {
   test("creates file and appends memory", async () => {
     // Clean slate – delete the file if it exists.
     try {
-      await Bun.$(`rm -f "${testDir}/${digimonId}.json"`);
+      await Bun.$`rm -f "${testDir}/${digimonId}.json"`;
     } catch {}
 
     const result = await saveMemory({ digimonId, memory });
@@ -18,7 +18,8 @@ describe("saveMemorySkill", () => {
     expect(result.file).toBe(`${testDir}/${digimonId}.json`);
 
     // Read back the file and confirm the memory is stored.
-    const content = await Bun.file(result.file).text();
+    // @ts-ignore
+  const content = await Bun.file(result.file as any).text();
     const parsed = JSON.parse(content);
     expect(Array.isArray(parsed)).toBe(true);
     expect(parsed).toContain(memory);

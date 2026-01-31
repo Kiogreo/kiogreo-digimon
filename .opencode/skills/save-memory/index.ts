@@ -12,7 +12,7 @@ import { Output } from "./output.interface";
 import { meta } from "./meta";
 
 /** Main entry point for the skill. */
-async function run(payload: Input): Promise<Output> {
+export async function run(payload: Input): Promise<Output> {
   // 1️⃣ Ensure we respect the critical context rule.
   await loadCodeQualityContext();
 
@@ -24,7 +24,7 @@ async function run(payload: Input): Promise<Output> {
   // Normalise the identifier to a safe filename.
   const safeId = payload.digimonId.replace(/[^a-z0-9_-]/gi, "_").toLowerCase();
 
-  const dir = `${env:PROJECT_DIR:""}/data/memories`;
+  const dir = `${process.env.PROJECT_DIR || ""}/data/memories`;
   const filePath = `${dir}/${safeId}.json`;
 
   // 3️⃣ Ensure the destination directory exists.
@@ -50,3 +50,4 @@ async function run(payload: Input): Promise<Output> {
 }
 
 export default { meta, run };
+
