@@ -1,246 +1,201 @@
-# Agent Development Guide - kiogreo-digimon
+# Agent Development Guide – kiogreo-digimon
 
-> **Purpose**: AI orchestration framework for Digimon-like virtual pet simulation within the Kiogreo Ecosystem  
-> **Stack**: TypeScript, Bun runtime, OpenCode AI Framework  
-> **Last Updated**: 2026-01-14
-
----
-
-## Build, Lint & Test Commands
-
-```bash
-# Development
-bun run <file>.ts           # Run TypeScript directly (no build step needed)
-bun --watch <file>.ts       # Run with auto-reload
-
-# Type Checking
-tsc --noEmit                # Type check without emitting files
-tsc --noEmit --watch        # Watch mode for type checking
-
-# Testing (Framework not yet configured)
-# TODO: Add Vitest or Bun's built-in test runner
-# bun test                  # Run all tests (when configured)
-# bun test <file>           # Run single test file
-# bun test --watch          # Watch mode
-
-# Linting (Not yet configured)
-# TODO: Add ESLint with TypeScript support
-# eslint .                  # Lint all files
-# eslint --fix .            # Auto-fix issues
-
-# Plugin/Tool Development
-cd .opencode/plugin && bun install && bun run telegram-notify.ts
-cd .opencode/tool && bun install && bun run gemini/index.ts
-
-# OpenCode Agent Usage
-opencode --agent openagent  # Start universal agent
-opencode --agent opencoder  # Start development specialist
-```
+> **Purpose**: Standardise how AI agents work in this repo (build, test, style, lint, etc.).
+> **Stack**: TypeScript, Bun, OpenCode framework.
+> **Last Updated**: 2026-01-31
 
 ---
 
-## Code Style Guidelines
+## 1️⃣ Build / Lint / Test Commands
+
+| Goal                     | Command                                    | Notes                                 |
+|--------------------------|--------------------------------------------|--------------------------------------|
+| Run a TS file (dev)      | `bun <file>.ts`                             | No compile step required             |
+| Auto‑reload dev file      | `bun --watch <file>.ts`                     |                                      |
+| Type‑check only          | `tsc --noEmit`                              | Fails on TS errors, no output        |
+| Continuous type‑check    | `tsc --noEmit --watch`                      |                                      |
+| Run **all** tests        | `bun test`                                   | Built‑in Bun test runner             |
+| Run **single** test file | `bun test <path>/<file>.test.ts`            | *example:* `bun test src/utils/math.test.ts` |
+| Run tests matching pattern | `bun test --grep "<pattern>"`               |                                      |
+| Watch tests               | `bun test --watch`                           |                                      |
+| Coverage report           | `bun test --coverage`                        |                                      |
+| Lint (when ESLint added) | `eslint .`                                   | –                                    |
+| Auto‑fix lint             | `eslint --fix .`                            | –                                    |
+| Lint single file          | `eslint <file>.ts`                           | –                                    |
+| Plugin dev                | `cd .opencode/plugin && bun install && bun run telegram-notify.ts` |
+| Tool dev                  | `cd .opencode/tool && bun install && bun run gemini/index.ts` |
+| OpenCode agents           | `opencode --agent openagent` (recommended)  |
+|                           | `opencode --agent opencoder` (dev specialist) |
+
+---
+
+## 2️⃣ Code‑Style Guidelines
 
 ### Formatting
-- **Indentation**: 2 spaces (no tabs)
-- **Quotes**: Double quotes
-- **Semicolons**: Required
-- **Line Length**: Max 100 chars (prefer 80)
-- **Trailing Commas**: Use in multiline objects/arrays
+- **Indent**: 2 spaces (no tabs)
+- **Quotes**: double (`"`) everywhere
+- **Semicolons**: required
+- **Line length**: ≤ 100 chars (prefer ≤ 80)
+- **Trailing commas** in multiline literals
 
 ### Naming Conventions
-- **Files**: `kebab-case.ts` (e.g., `telegram-notify.ts`)
-- **Classes**: `PascalCase` (e.g., `SimpleTelegramBot`)
-- **Functions**: `camelCase` (e.g., `generateImage`, `loadEnvVariables`)
-- **Constants**: `UPPER_SNAKE_CASE` (e.g., `DEFAULT_ENV_PATHS`, `ENABLED`)
-- **Interfaces/Types**: `PascalCase` (e.g., `EnvLoaderConfig`, `ImageConfig`)
+| Element                | Convention          | Example                     |
+|------------------------|--------------------|-----------------------------|
+| Files                  | `kebab-case.ts`    | `telegram-notify.ts`        |
+| Classes                | `PascalCase`       | `SimpleTelegramBot`        |
+| Functions              | `camelCase`        | `generateImage`              |
+| Constants              | `UPPER_SNAKE_CASE`| `DEFAULT_TIMEOUT`           |
+| Interfaces / Types      | `PascalCase`       | `ImageConfig`               |
+| Variables              | `camelCase`        | `outputDir`                 |
 
-### Imports
-```typescript
-// Group: types → external → internal
-import type { Plugin } from "@opencode-ai/plugin"
-import { readFile } from "fs/promises"
-import { resolve, join } from "path"
+### Imports (grouped, one per line)
+```ts
+// 1️⃣ Types
+import type { Plugin } from "@opencode-ai/plugin";
+
+// 2️⃣ External libs
+import { readFile } from "fs/promises";
+
+// 3️⃣ Internal utils
+import { resolve, join } from "path";
 ```
 
-### Types & Interfaces
-```typescript
-// ✅ GOOD: Explicit types
-interface ImageConfig {
-  outputDir?: string
-  customName?: string
-}
+### Functional‑Programming & Error Handling *(from `code-quality.md`)*
+- **Pure functions** – same input → same output, no side‑effects.
+- **Immutability** – never mutate arguments; use spread / `Object.assign` or array copies.
+- **Composition** – build larger behaviour from small, focused functions.
+- **Explicit dependencies** – inject collaborators (e.g., DB, logger) via parameters, never import globals.
+- **Error handling** – return `{ success: boolean, data?, error? }` objects or throw explicit errors; avoid `console.log` inside pure logic.
 
-export async function generateImage(
-  prompt: string, 
-  config: ImageConfig = {}
-): Promise<string> { }
+### Documentation Standards
+- **Golden Rule**: If the same question is asked twice, document it.
+- **What to document** – why decisions were made, complex algorithms, public APIs, setup, limitations, architecture diagrams.
+- **What NOT to document** – obvious code, self‑explanatory logic, stale information.
 
-// ❌ BAD: Implicit any
-function doSomething(data) { return data.value }
-```
-
-### Error Handling
-```typescript
-// ✅ GOOD: Helpful error messages
-if (!value) {
-  throw new Error(`${apiKeyName} not found. Please set it in .env file.
-To fix: ${apiKeyName}=your_value_here`)
-}
-
-// ✅ GOOD: Try-catch with context
-try {
-  return await generateImage(prompt, config)
-} catch (error) {
-  return `Error: ${error.message}`
-}
-
-// ❌ BAD: Silent failures
-try { doSomething() } catch (e) { console.log("error") }
-```
-
-### Environment Variables
-```typescript
-// ✅ GOOD: Use env vars for secrets
-const apiKey = await getApiKey('GEMINI_API_KEY')
-const timeout = parseInt(process.env.TELEGRAM_IDLE_TIMEOUT || '300000')
-
-// ❌ BAD: Hardcoded credentials
-const apiKey = "sk-1234567890abcdef"
-```
-
-### Async/Await
-```typescript
-// ✅ GOOD: Async/await with error handling
-export async function editImage(path: string, prompt: string): Promise<string> {
-  const apiKey = await getGeminiApiKey()
-  const res = await fetch(url, { method: "POST", body: JSON.stringify(body) })
-  
-  if (!res.ok) {
-    const errorText = await res.text()
-    throw new Error(`API error (${res.status}): ${errorText}`)
-  }
-  return result
-}
-
-// ❌ BAD: Promise chains
-function getData() {
-  return fetch(url).then(res => res.json().then(data => callback(data)))
-}
-```
-
-### File System Operations
-```typescript
-// ✅ GOOD: Safe file operations
-async function ensureDirectoryExists(dirPath: string) {
-  try {
-    await mkdir(dirPath, { recursive: true })
-  } catch (error) {
-    // Directory might already exist
-  }
-}
-
-// Always validate paths, use join/resolve, handle errors
-```
-
----
-
-## OpenCode Agent Patterns
-
-### Agent Structure
+#### README Template
 ```markdown
----
-description: "Brief description"
-mode: primary|subagent
-tools: [read, edit, bash, task]
----
+# Project Name
+Brief description (1‑2 sentences)
 
-# Agent Name
+## Features
+- Feature 1
+- Feature 2
 
-**EXECUTE** this workflow:
-**1. ANALYZE** - Understand goal
-**2. PLAN** - Break into steps
-**3. EXECUTE** - Implement
-
-**RULES:**
-- **ALWAYS** validate input
-- **NEVER** expose sensitive data
+## Installation
+```bash
+npm install package-name
 ```
 
-### Plugin Structure
-```typescript
-import type { Plugin } from "@opencode-ai/plugin"
+## Quick Start
+```js
+const result = doSomething();
+```
 
-const ENABLED = false // Feature flag
+## Usage
+[Detailed examples]
 
-export const MyPlugin: Plugin = async ({ $ }) => {
-  if (!ENABLED) return {}
-  
-  return {
-    async event(input) {
-      if (input.event.type === "session.idle") {
-        // Handle event
-      }
-    }
-  }
+## API Reference
+[If applicable]
+
+## Contributing
+[Link to CONTRIBUTING.md]
+
+## License
+[License type]
+```
+
+#### Function JSDoc Example
+```js
+/**
+ * Calculate total price including tax.
+ * @param {number} price - Base price.
+ * @param {number} taxRate - Tax rate (0‑1).
+ * @returns {number} Total with tax.
+ * @example
+ * calculateTotal(100, 0.1) // 110
+ */
+function calculateTotal(price, taxRate) {
+  return price * (1 + taxRate);
 }
 ```
 
 ---
 
-## Security & Testing
+## 3️⃣ Testing Standards (from `test-coverage.md`)
 
-### Security
-- **NEVER** commit `.env` files (use `.env.example`)
-- **ALWAYS** use environment variables for secrets
-- **VALIDATE** all user input
-- **SANITIZE** file paths (prevent traversal)
-- **USE** feature flags (`ENABLED`) for optional features
+**Golden Rule** – If you can’t test it easily, refactor it.
 
-### Testing (AAA Pattern)
-```typescript
-test('generateImage saves file with unique name', async () => {
+### AAA Pattern
+```js
+test('calculateTotal returns sum of item prices', () => {
   // Arrange
-  const prompt = "A cute Digimon"
-  const config = { customName: "agumon" }
-  
+  const items = [{ price: 10 }, { price: 20 }, { price: 30 }];
+
   // Act
-  const result = await generateImage(prompt, config)
-  
+  const result = calculateTotal(items);
+
   // Assert
-  expect(result).toContain("Generated image saved")
-})
+  expect(result).toBe(60);
+});
+```
+
+### What to Test (✅ DO)
+- Happy path & typical usage
+- Edge cases (empty, null, boundaries)
+- Error cases (invalid input, failures)
+- Business logic & public APIs
+
+### What NOT to Test (❌ DON'T)
+- Third‑party libraries / framework internals
+- Simple getters/setters or private implementation details
+
+### Coverage Goals
+- **Critical** (100 %): Core business logic, data transformations
+- **High** (90 %+): Public APIs, user‑facing features
+- **Medium** (80 %+): Utility helpers
+- **Low** (optional): Simple wrappers
+
+### Test Naming
+```js
+// ✅ Good
+test('calculateDiscount returns 10% off for premium users', () => {});
+
+// ❌ Bad
+test('it works', () => {});
+```
+
+### Dependency‑Injection Testing Example
+```js
+function createUserService(database) {
+  return { getUser: (id) => database.findById('users', id) };
+}
+
+test('getUser retrieves from database', () => {
+  const mockDb = { findById: jest.fn().mockReturnValue({ id: 1, name: 'John' }) };
+  const service = createUserService(mockDb);
+  const user = service.getUser(1);
+  expect(mockDb.findById).toHaveBeenCalledWith('users', 1);
+  expect(user).toEqual({ id: 1, name: 'John' });
+});
 ```
 
 ---
 
-## Project-Specific Patterns
+## 4️⃣ Repository‑Wide Rules (if present)
 
-### Digimon Documents
-- Format: JSON/YAML/Markdown
-- Fields: name, personality, specialization, XP, evolution stage
-- Memory: 150-300 lines (buffer system, older memories archived)
+- **Cursor rules**: none found (`.cursor/rules/` empty).
+- **Copilot instructions**: none found (`.github/copilot‑instructions.md` missing).
 
-### Agent Specialization
-- Traits: engineering, scientist, arts, politics
-- Match tasks to specialized Digimon
-- Enable collaboration for complex tasks
+*If such files appear later, add a short “⚙️ Rules” section summarising their directives.*
 
 ---
 
-## Common Pitfalls
+## 5️⃣ How to Use This File
 
-❌ **DON'T**: Mutate state, use `any`, ignore TS errors, skip error handling, hardcode paths/secrets, write functions > 50 lines  
-✅ **DO**: Use pure functions, validate input, provide helpful errors, use strict mode, document complex logic, write tests
-
----
-
-## Quick Reference
-
-**Locations**: `.opencode/agent/`, `.opencode/command/`, `.opencode/plugin/`, `.opencode/tool/`, `.opencode/context/`  
-**Dependencies**: `@opencode-ai/plugin`, `@opencode-ai/sdk`, `zod`  
-**Env Vars**: `GEMINI_API_KEY`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `GEMINI_TEST_MODE`
+1. Keep this file at the repository root as `AGENTS.md`.
+2. Update it whenever new tooling, style decisions, or standards are introduced.
+3. All AI agents **must read** this file **before** performing any code changes.
 
 ---
 
-*Guide for AI agents working on kiogreo-digimon. Follow these patterns for consistency and quality.*
+*End of guide.*

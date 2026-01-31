@@ -1,0 +1,17 @@
+# Digimon Directory
+
+Hatched Digimon companions are stored here.
+
+Each Digimon has their own directory:
+```
+digimon/
+└── {DigimonName}/
+    ├── digimon.md         # Main profile and stats
+    ├── agent.md           # Agent configuration
+    └── memories/
+        ├── active.md      # Current memory buffer (150-300 lines)
+        └── archive/       # Summarized old memories
+```
+
+Digimon are created by hatching Digitama.
+Use `/hatch-digitama {name}` to create your first Digimon!

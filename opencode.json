@@ -1,0 +1,28 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "autoupdate": true,
+  "autoshare": true,
+  "share": "auto",
+  "username": "Kiogreo",
+  "default_agent": "OpenAgent",
+  "model": "ollama/gpt-oss:120b-cloud",
+  "small_model": "ollama/gpt-oss:120b-cloud",
+  "plugin": [
+
+  ],
+  "compaction": {
+    "prune": true,
+    "auto": true
+  },
+  "server": {
+    "hostname": "localhost",
+    "port": 5050,
+    "mdns": true
+  },
+  "skills": {
+    "paths": [
+      ".opencode/skill",
+      ".opencode/skills"
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+# Digitama Directory
+
+Unhatched Digitama (eggs) are stored here.
+
+Each Digitama file contains:
+- Unique ID and traits
+- Specialization tendency
+- Potential level
+- Creative description
+
+Use `/generate-digitama [name]` to create new Digitama.
+Use `/hatch-digitama {name}` to bring them to life!
