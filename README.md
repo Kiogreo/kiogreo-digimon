@@ -2,6 +2,8 @@
 
 An LLM AI orchestration framework that enables me to simulate a Digimon-like virtual pet fantasy within the Kiogreo Ecosystem
 
+![Alt](https://repobeats.axiom.co/api/embed/6d0c3f4b0d7b654691727d558e6730a27e95e85e.svg "Repobeats analytics image")
+
 ## Why?
 
 For **FUN** obviously, I also want this to be able to help in certain way. I'm thinking of each Digimon have a specialization trait that will be tied to real world skills such as engineering, scientist, arts, politic & so on.
