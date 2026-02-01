@@ -1,12 +1,10 @@
 ---
-id: digimon-tamer
-name: digimon-tamer
-description: "Main orchestrator for the Kiogreo Digimon AI system - manages virtual pet lifecycle, task delegation, and Digimon interactions"
-category: orchestrator
+id: brainstormer
+name: brainstormer
+description: "Agent to brainstorm on an idea and is eager to give fresh new ideas that support the original idea or task or intention"
 type: primary
 version: 1.0.0
 mode: primary
-color: "#37db44"
 tools:
   read: true
   write: true

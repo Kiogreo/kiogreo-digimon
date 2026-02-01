@@ -4,7 +4,7 @@
   "autoshare": true,
   "share": "auto",
   "username": "Kiogreo",
-  "default_agent": "OpenAgent",
+  "default_agent": "digimon-tamer",
   "model": "ollama/gpt-oss:120b-cloud",
   "small_model": "ollama/gpt-oss:120b-cloud",
   "plugin": [
@@ -28,6 +28,36 @@
       ".opencode/skill",
       ".opencode/skills"
     ]
+  },
+  "provider": {
+      "ollama": {
+          "npm": "@ai-sdk/openai-compatible",
+          "name": "Ollama (local)",
+          "options": {
+              "baseURL": "http://localhost:11434/v1"
+          },
+          "models": {
+              "gpt-oss:120b-cloud": {
+                  "name": "gpt-oss:120b-cloud"
+              },
+              "devstral-2:123b-cloud": {
+                "name": "devstral-2:123b-cloud"
+              },
+              "nemotron-3-nano:30b-cloud": {
+                "name": "nemotron-3-nano:30b-cloud"
+              },
+              "qwen3-coder:480b-cloud": {
+                "name": "qwen3-coder:480b-cloud"
+              },
+              "rnj-1:8b-cloud": {
+                "name": "rnj-1:8b-cloud",
+                "limit": {
+                  "context": 32768,
+                  "output": 16384
+                }
+              }
+          },
+      }
   },
   "mcp": {
     "context7": {

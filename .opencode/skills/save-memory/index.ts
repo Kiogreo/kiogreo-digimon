@@ -4,6 +4,7 @@ import { Input } from "./input.interface";
 import { Output } from "./output.interface";
 import { meta } from "./meta";
 import { createOpencodeClient } from "@opencode-ai/sdk/v2";
+import { writeMemory } from "./core";
 
 export async function run(payload: Input): Promise<Output> {
   if (!payload.digimonId?.trim() || !payload.memory?.trim()) {
@@ -40,8 +41,8 @@ export async function run(payload: Input): Promise<Output> {
 
   try {
     existing.push(payload.memory.trim());
-    await writeFile(filePath, JSON.stringify(existing, null, 2), "utf8");
-    
+
+    await writeMemory(filePath, existing);
     await client.tui.showToast({
       message: 'Digimon Memory saved successfully',
       variant: 'success'

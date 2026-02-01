@@ -1,31 +1,27 @@
 # Agent Development Guide – kiogreo-digimon
 
-> **Purpose**: Standardise how AI agents work in this repo (build, test, style, lint, etc.).
+> **Purpose**: Provide a single source of truth for AI agents operating in this repository – build, test, style, lint, and documentation standards.
 > **Stack**: TypeScript, Bun, OpenCode framework.
-> **Last Updated**: 2026-01-31
+> **Last Updated**: 2026-02-01
 
 ---
 
 ## 1️⃣ Build / Lint / Test Commands
 
-| Goal                     | Command                                    | Notes                                 |
-|--------------------------|--------------------------------------------|--------------------------------------|
-| Run a TS file (dev)      | `bun <file>.ts`                             | No compile step required             |
-| Auto‑reload dev file      | `bun --watch <file>.ts`                     |                                      |
-| Type‑check only          | `tsc --noEmit`                              | Fails on TS errors, no output        |
-| Continuous type‑check    | `tsc --noEmit --watch`                      |                                      |
-| Run **all** tests        | `bun test`                                   | Built‑in Bun test runner             |
-| Run **single** test file | `bun test <path>/<file>.test.ts`            | *example:* `bun test src/utils/math.test.ts` |
-| Run tests matching pattern | `bun test --grep "<pattern>"`               |                                      |
-| Watch tests               | `bun test --watch`                           |                                      |
-| Coverage report           | `bun test --coverage`                        |                                      |
-| Lint (when ESLint added) | `eslint .`                                   | –                                    |
-| Auto‑fix lint             | `eslint --fix .`                            | –                                    |
-| Lint single file          | `eslint <file>.ts`                           | –                                    |
-| Plugin dev                | `cd .opencode/plugin && bun install && bun run telegram-notify.ts` |
-| Tool dev                  | `cd .opencode/tool && bun install && bun run gemini/index.ts` |
-| OpenCode agents           | `opencode --agent openagent` (recommended)  |
-|                           | `opencode --agent opencoder` (dev specialist) |
+| Goal | Command | Notes |
+|------|---------|-------|
+| Run a TS file (dev) | `bun <file>.ts` | No compile step needed |
+| Auto‑reload dev file | `bun --watch <file>.ts` | |
+| Type‑check only | `tsc --noEmit` | Fails on TS errors |
+| Run **all** tests | `bun test` | Built‑in Bun test runner |
+| Run **single** test file | `bun test <path>/<file>.test.ts` | Example: `bun test src/utils/math.test.ts` |
+| Run tests matching pattern | `bun test --grep "<pattern>"` | |
+| Watch tests | `bun test --watch` | |
+| Coverage report | `bun test --coverage` | |
+| Lint (if ESLint present) | `eslint .` | |
+| Auto‑fix lint | `eslint --fix .` | |
+| Lint single file | `eslint <file>.ts` | |
+| OpenCode agents | `opencode --agent openagent` (recommended) | |
 
 ---
 
@@ -39,14 +35,14 @@
 - **Trailing commas** in multiline literals
 
 ### Naming Conventions
-| Element                | Convention          | Example                     |
-|------------------------|--------------------|-----------------------------|
-| Files                  | `kebab-case.ts`    | `telegram-notify.ts`        |
-| Classes                | `PascalCase`       | `SimpleTelegramBot`        |
-| Functions              | `camelCase`        | `generateImage`              |
-| Constants              | `UPPER_SNAKE_CASE`| `DEFAULT_TIMEOUT`           |
-| Interfaces / Types      | `PascalCase`       | `ImageConfig`               |
-| Variables              | `camelCase`        | `outputDir`                 |
+| Element | Convention | Example |
+|--------|------------|---------|
+| Files | `kebab-case.ts` | `telegram-notify.ts` |
+| Classes | `PascalCase` | `SimpleTelegramBot` |
+| Functions | `camelCase` | `generateImage` |
+| Constants | `UPPER_SNAKE_CASE` | `DEFAULT_TIMEOUT` |
+| Interfaces / Types | `PascalCase` | `ImageConfig` |
+| Variables | `camelCase` | `outputDir` |
 
 ### Imports (grouped, one per line)
 ```ts
@@ -60,73 +56,31 @@ import { readFile } from "fs/promises";
 import { resolve, join } from "path";
 ```
 
-### Functional‑Programming & Error Handling *(from `code-quality.md`)*
+### Functional‑Programming & Error Handling (from `code-quality.md`)
 - **Pure functions** – same input → same output, no side‑effects.
-- **Immutability** – never mutate arguments; use spread / `Object.assign` or array copies.
+- **Immutability** – never mutate arguments; use spread or `Object.assign`.
 - **Composition** – build larger behaviour from small, focused functions.
-- **Explicit dependencies** – inject collaborators (e.g., DB, logger) via parameters, never import globals.
-- **Error handling** – return `{ success: boolean, data?, error? }` objects or throw explicit errors; avoid `console.log` inside pure logic.
+- **Explicit dependencies** – inject collaborators via parameters, never import globals.
+- **Error handling** – return `{ success: boolean, data?, error? }` objects or throw explicit errors; avoid `console.log` in pure logic.
 
 ### Documentation Standards
 - **Golden Rule**: If the same question is asked twice, document it.
-- **What to document** – why decisions were made, complex algorithms, public APIs, setup, limitations, architecture diagrams.
+- **What to document** – why decisions were made, complex algorithms, public APIs, setup, limitations.
 - **What NOT to document** – obvious code, self‑explanatory logic, stale information.
-
-#### README Template
-```markdown
-# Project Name
-Brief description (1‑2 sentences)
-
-## Features
-- Feature 1
-- Feature 2
-
-## Installation
-```bash
-npm install package-name
-```
-
-## Quick Start
-```js
-const result = doSomething();
-```
-
-## Usage
-[Detailed examples]
-
-## API Reference
-[If applicable]
-
-## Contributing
-[Link to CONTRIBUTING.md]
-
-## License
-[License type]
-```
-
-#### Function JSDoc Example
-```js
-/**
- * Calculate total price including tax.
- * @param {number} price - Base price.
- * @param {number} taxRate - Tax rate (0‑1).
- * @returns {number} Total with tax.
- * @example
- * calculateTotal(100, 0.1) // 110
- */
-function calculateTotal(price, taxRate) {
-  return price * (1 + taxRate);
-}
-```
+- **README template** and **JSDoc** examples are provided in the repository’s `docs/` folder.
 
 ---
 
 ## 3️⃣ Testing Standards (from `test-coverage.md`)
 
-**Golden Rule** – If you can’t test it easily, refactor it.
+- **AAA Pattern**: `Arrange → Act → Assert`.
+- **Golden Rule**: If you can’t test it easily, refactor it.
+- **Coverage Goals**: Critical (100 %), High (90 %+), Medium (80 %+).
+- **What to test** – happy path, edge cases, error cases, business logic, public APIs.
+- **What NOT to test** – third‑party libraries, framework internals, simple getters/setters.
 
-### AAA Pattern
-```js
+### Example test (Jest)
+```ts
 test('calculateTotal returns sum of item prices', () => {
   // Arrange
   const items = [{ price: 10 }, { price: 20 }, { price: 30 }];
@@ -139,33 +93,8 @@ test('calculateTotal returns sum of item prices', () => {
 });
 ```
 
-### What to Test (✅ DO)
-- Happy path & typical usage
-- Edge cases (empty, null, boundaries)
-- Error cases (invalid input, failures)
-- Business logic & public APIs
-
-### What NOT to Test (❌ DON'T)
-- Third‑party libraries / framework internals
-- Simple getters/setters or private implementation details
-
-### Coverage Goals
-- **Critical** (100 %): Core business logic, data transformations
-- **High** (90 %+): Public APIs, user‑facing features
-- **Medium** (80 %+): Utility helpers
-- **Low** (optional): Simple wrappers
-
-### Test Naming
-```js
-// ✅ Good
-test('calculateDiscount returns 10% off for premium users', () => {});
-
-// ❌ Bad
-test('it works', () => {});
-```
-
-### Dependency‑Injection Testing Example
-```js
+### Dependency‑Injection testing example
+```ts
 function createUserService(database) {
   return { getUser: (id) => database.findById('users', id) };
 }
